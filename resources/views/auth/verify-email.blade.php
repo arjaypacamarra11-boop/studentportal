@@ -20,7 +20,7 @@
 <body>
 <main class="box">
     <h1>Verify your email</h1>
-    <p>We sent a verification link to <strong>{{ Auth::user()->email }}</strong>. Open that email and click the link before continuing to your student dashboard.</p>
+    <p>Your account is ready. You can use the student portal now and verify your email later.</p>
 
     @if (session('status'))
         <div class="status">{{ session('status') }}</div>
@@ -30,10 +30,21 @@
         <div class="error">{{ $errors->first() }}</div>
     @endif
 
-    <form method="POST" action="{{ route('verification.send') }}">
-        @csrf
-        <button type="submit">Resend verification email</button>
-    </form>
+    @if (! Auth::user()->hasVerifiedEmail())
+        @if (config('mail.default') === 'log')
+            <div class="error">Email delivery isn’t configured, so a verification link can’t be sent yet. You can continue now and verify later.</div>
+        @else
+            <p>To verify now, send a link to <strong>{{ Auth::user()->email }}</strong> and open it from your inbox.</p>
+            <form method="POST" action="{{ route('verification.send') }}">
+                @csrf
+                <button type="submit">Send verification email</button>
+            </form>
+        @endif
+    @else
+        <div class="status">Your email is verified.</div>
+    @endif
+
+    <a class="continue" href="{{ route('homepage') }}">Continue to the student portal</a>
 
     <form method="POST" action="{{ route('logout') }}">
         @csrf

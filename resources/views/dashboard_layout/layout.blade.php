@@ -44,6 +44,8 @@
         .btn-red { background:#ef4444; }
         .btn-block { width:100%; }
         .alert { padding:12px 16px; border-radius:10px; margin-bottom:18px; background:#dcfce7; color:#166534; font-size:14px; }
+        .verification-alert { padding:12px 16px; border-radius:10px; margin-bottom:18px; background:#fef3c7; color:#92400e; font-size:14px; }
+        .verification-alert a { color:inherit; font-weight:700; margin-left:6px; }
 
         table { width:100%; border-collapse:collapse; background:#fff; }
         th, td { padding:14px; text-align:left; font-size:14px; border-bottom:1px solid var(--border); }
@@ -79,6 +81,12 @@
 
 <main class="main">
     @if (session('status')) <div class="alert">{{ session('status') }}</div> @endif
+    @if (! Auth::user()->hasVerifiedEmail())
+        <div class="verification-alert">
+            Your email address is not verified. You can use the portal and verify later.
+            <a href="{{ route('verification.notice') }}">Verify email</a>
+        </div>
+    @endif
     @yield('content')
 </main>
 </body>

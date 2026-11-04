@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware('auth')->group(function () {
     Route::get('/homepage',       [DashboardController::class, 'homepage'])->name('homepage');
     Route::get('/calendar',       [DashboardController::class, 'calendar'])->name('calendar');
     Route::get('/online-classes', [DashboardController::class, 'onlineClasses'])->name('online_classes');
