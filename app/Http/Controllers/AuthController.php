@@ -23,6 +23,12 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        if (config('mail.default') === 'log') {
+            return back()
+                ->withErrors(['email' => 'Email verification is not configured yet. Please try again later.'])
+                ->withInput($request->only('name', 'email'));
+        }
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],

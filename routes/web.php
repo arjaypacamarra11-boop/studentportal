@@ -26,6 +26,10 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('homepage')->with('status', 'Your email has been verified.');
     })->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
     Route::post('/email/verification-notification', function (Request $request) {
+        if (config('mail.default') === 'log') {
+            return back()->withErrors(['email' => 'Email verification is not configured yet. Please try again later.']);
+        }
+
         $request->user()->sendEmailVerificationNotification();
 
         return back()->with('status', 'A new verification link has been sent to your email address.');
