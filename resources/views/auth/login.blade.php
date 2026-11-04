@@ -103,7 +103,7 @@
 
         <div class="admin">
             <i class="fa-solid fa-shield-halved"></i>
-            <span>New to student portal? <a href="#">Contact your administrator</a></span>
+            <span>New to student portal? <a href="{{ route('register') }}">Create an account</a></span>
         </div>
     </div>
 </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -13,6 +14,27 @@ class AuthController extends Controller
             return redirect()->route('homepage');
         }
         return view('auth.login');
+    }
+
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
+
+    public function register(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user = User::create($data);
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->route('homepage')->with('status', 'Your account has been created.');
     }
 
     public function login(Request $request)

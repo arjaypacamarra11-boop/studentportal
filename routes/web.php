@@ -9,6 +9,13 @@ Route::get('/', fn () => redirect()->route('login'));
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
+Route::middleware('guest')->group(function () {
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])
+        ->middleware('throttle:6,1')
+        ->name('register.submit');
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/homepage',       [DashboardController::class, 'homepage'])->name('homepage');
     Route::get('/calendar',       [DashboardController::class, 'calendar'])->name('calendar');
