@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -17,6 +19,21 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', fn () => view('auth.verify-email'))->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+
+        return redirect()->route('homepage')->with('status', 'Your email has been verified.');
+    })->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('status', 'A new verification link has been sent to your email address.');
+    })->middleware('throttle:6,1')->name('verification.send');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/homepage',       [DashboardController::class, 'homepage'])->name('homepage');
     Route::get('/calendar',       [DashboardController::class, 'calendar'])->name('calendar');
     Route::get('/online-classes', [DashboardController::class, 'onlineClasses'])->name('online_classes');
@@ -25,6 +42,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/chat',             [DashboardController::class, 'storeMessage'])->name('chat.store');
     Route::delete('/chat/{message}', [DashboardController::class, 'destroyMessage'])->name('chat.destroy');
 
-    Route::get('/logout',  [DashboardController::class, 'logoutPage'])->name('logout.page');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/logout', [DashboardController::class, 'logoutPage'])->name('logout.page');
 });

@@ -33,8 +33,9 @@ class AuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+        $user->sendEmailVerificationNotification();
 
-        return redirect()->route('homepage')->with('status', 'Your account has been created.');
+        return redirect()->route('verification.notice');
     }
 
     public function login(Request $request)
